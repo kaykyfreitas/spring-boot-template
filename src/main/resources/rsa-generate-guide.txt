@@ -1,0 +1,18 @@
+Create a directory with name 'certs'
+
+In the terminal, access the certs directory
+Run the follow bash commands
+
+    openssl genrsa -out keypair.pem 2048
+    openssl rsa -in keypair.pem -pubout -out public.pem
+    openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in keypair.pem -out private.pem
+    rm keypair.pem
+
+This will generate yours rsa files in the certs directory
+
+After that you will have something like that
+
+    src/main/resources/certs/public.pem
+    src/main/resources/certs/private.pem
+
+The certs directory doesn't will be added in the git, save only with you
