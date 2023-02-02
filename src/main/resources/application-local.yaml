@@ -1,0 +1,40 @@
+spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+
+application:
+  datasource:
+    main:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://localhost:5432/springboot
+      username: postgres
+      password: P@ssw0rd
+      pool-size: 30
+
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+
+rsa:
+  public-key: classpath:certs/public.pem
+  private-key: classpath:certs/private.pem
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
+  endpoint:
+    info:
+      enabled: true
+    beans:
+      cache:
+        time-to-live: "10s"

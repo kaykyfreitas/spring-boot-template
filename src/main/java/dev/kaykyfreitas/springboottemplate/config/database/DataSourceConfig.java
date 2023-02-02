@@ -1,4 +1,4 @@
-package dev.kaykyfreitas.springboottemplate.config;
+package dev.kaykyfreitas.springboottemplate.config.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
