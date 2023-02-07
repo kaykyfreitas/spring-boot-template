@@ -1,8 +1,7 @@
 package dev.kaykyfreitas.springboottemplate.controller;
 
-import dev.kaykyfreitas.springboottemplate.exception.ApiRequestException;
-import dev.kaykyfreitas.springboottemplate.exception.ApiServiceException;
-import dev.kaykyfreitas.springboottemplate.exception.ApiValidationException;
+import dev.kaykyfreitas.springboottemplate.dto.ResponseDto;
+import dev.kaykyfreitas.springboottemplate.utils.response.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,39 +15,18 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class AppController {
+public class AppController implements ResponseUtils {
 
     private final KafkaTemplate<String, String> kafka;
 
     @GetMapping("hello")
-    public ResponseEntity<String> hello(Principal principal) {
-        var message = "Hello, " + principal.getName() + "!";
-        return ResponseEntity.ok(message);
+    public ResponseEntity<ResponseDto<Object>> hello(Principal principal) {
+        return success("Hello, " + principal.getName() + "!");
     }
 
     @GetMapping("producer/{message}")
     public void producer(@PathVariable String message) {
         this.kafka.send("spring", message);
-    }
-
-    @GetMapping("fail/1")
-    public void test1() {
-        throw new RuntimeException("Invalid request");
-    }
-
-    @GetMapping("fail/2")
-    public void test2() {
-        throw new ApiRequestException("Request exception");
-    }
-
-    @GetMapping("fail/3")
-    public void test3() {
-        throw new ApiServiceException("Service exception");
-    }
-
-    @GetMapping("fail/4")
-    public void test4() {
-        throw new ApiValidationException("Validation exception");
     }
 
 }

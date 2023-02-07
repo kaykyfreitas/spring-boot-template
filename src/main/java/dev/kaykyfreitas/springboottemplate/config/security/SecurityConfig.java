@@ -6,7 +6,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import dev.kaykyfreitas.springboottemplate.config.security.RSAKeyProperties;
+import dev.kaykyfreitas.springboottemplate.config.ApiConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -45,14 +45,14 @@ public class SecurityConfig {
     JdbcUserDetailsManager users(@Qualifier("hikariDataSource") DataSource hikariDataSource, PasswordEncoder passwordEncoder) {
 
         UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
+                .username(ApiConstants.DEFAULT_USERNAME)
+                .password(passwordEncoder.encode(ApiConstants.DEFAULT_PASSWORD))
+                .roles(ApiConstants.DEFAULT_ROLE)
                 .build();
 
         var jdbcUserDetailsManager = new JdbcUserDetailsManager(hikariDataSource);
 
-        if (Objects.equals(jdbcUserDetailsManager.userExists("admin"), false))
+        if (Objects.equals(jdbcUserDetailsManager.userExists(ApiConstants.DEFAULT_USERNAME), false))
             jdbcUserDetailsManager.createUser(admin);
 
         return jdbcUserDetailsManager;
@@ -63,6 +63,7 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

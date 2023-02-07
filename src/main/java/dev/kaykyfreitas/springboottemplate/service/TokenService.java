@@ -1,7 +1,9 @@
 package dev.kaykyfreitas.springboottemplate.service;
 
-import dev.kaykyfreitas.springboottemplate.exception.TokenException;
+import dev.kaykyfreitas.springboottemplate.dto.AuthDto;
+import dev.kaykyfreitas.springboottemplate.exception.ApiAuthException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -13,13 +15,14 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenService {
 
     private final JwtEncoder jwtEncoder;
 
-    public String generateToken(Authentication authentication) {
+    public AuthDto generateToken(Authentication authentication) {
 
         try {
 
@@ -37,11 +40,20 @@ public class TokenService {
                     .claim("scope", scope)
                     .build();
 
-            return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+            var token = this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+            var username = authentication.getName();
+            var roles = authentication.getAuthorities().stream().map(Object::toString).toList();
+
+            log.info("Token requested for user: '{}'", username);
+            log.info("User roles: {}", roles);
+            log.info("Token granted {}", token);
+
+            return new AuthDto(username, token, roles);
 
         } catch (Exception e) {
 
-            throw new TokenException("Error on token generation");
+            throw new ApiAuthException("Error on token generation");
 
         }
 
